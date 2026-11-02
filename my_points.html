@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+{% block title %}My Green Points{% endblock %}
+{% block content %}
+<section class="page-head">
+  <p class="eyebrow">Civic engagement</p>
+  <h1>🌱 My Green Points</h1>
+  <p class="subtext">Earn points by reporting new issues, confirming ones others already flagged,
+    and rating how your resolved complaints were handled.</p>
+</section>
+
+<section class="stat-card" style="max-width:220px;margin-bottom:28px;">
+  <span>{{ total }}</span>Total points
+</section>
+
+<h2>History</h2>
+{% if history %}
+<table class="table">
+  <tr><th>Points</th><th>Reason</th><th>Date</th></tr>
+  {% for h in history %}
+  <tr>
+    <td><span class="badge badge-low">+{{ h.points }}</span></td>
+    <td>{{ h.reason }}</td>
+    <td>{{ h.created_at.strftime('%d %b %Y %H:%M') }}</td>
+  </tr>
+  {% endfor %}
+</table>
+{% else %}
+<p>No points earned yet -- report your first issue to get started.</p>
+{% endif %}
+{% endblock %}

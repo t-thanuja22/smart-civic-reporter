@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+{% block title %}Login{% endblock %}
+{% block content %}
+<section class="form-card">
+  <p class="eyebrow">Citizen portal</p>
+  <h1>{{ t('login_heading') }}</h1>
+  <form method="POST">
+    <label>{{ t('login_email') }}<input type="email" name="email" required id="email-input"></label>
+    <label>{{ t('login_password') }}<input type="password" name="password" required id="password-input"></label>
+    <button class="btn" type="submit" id="login-btn">{{ t('login_button') }}</button>
+  </form>
+  <p>{{ t('login_new_here') }} <a href="{{ url_for('register') }}">{{ t('login_create_account') }}</a></p>
+  <p class="hint">{{ t('login_gov_staff') }} <a href="{{ url_for('worker_login') }}">{{ t('login_worker_login') }}</a> &middot;
+     <a href="{{ url_for('admin_login') }}">{{ t('login_admin_login') }}</a></p>
+</section>
+{% endblock %}

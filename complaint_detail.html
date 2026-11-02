@@ -1,0 +1,103 @@
+{% extends "base.html" %}
+{% block title %}Complaint {{ c.complaint_code }}{% endblock %}
+{% block content %}
+<h1>Complaint {{ c.complaint_code }}</h1>
+
+<section class="detail-grid">
+  <div>
+    {% if c.image_path %}
+      <img src="{{ url_for('uploaded_file', filename=c.image_path) }}"
+           style="max-width:100%;border-radius:8px;">
+    {% endif %}
+    {% if c.voice_note_path %}
+      <p style="margin-top:12px;"><strong>Voice note:</strong></p>
+      <audio controls style="width:100%;" src="{{ url_for('uploaded_file', filename=c.voice_note_path) }}"></audio>
+    {% endif %}
+  </div>
+  <div>
+    <p><strong>Description:</strong> {{ c.description }}</p>
+    <p><strong>Category:</strong> {{ c.category }}</p>
+    <p><strong>Routed to:</strong> {{ c.department }}</p>
+    <p><strong>Priority:</strong> <span class="badge badge-{{ c.priority|lower }}">{{ c.priority }}</span></p>
+    <p><strong>Status:</strong> <span class="badge badge-status-{{ c.status|lower|replace(' ', '-') }}">{{ c.status }}</span></p>
+    <p><strong>Location:</strong> {{ "%.5f"|format(c.latitude) }}, {{ "%.5f"|format(c.longitude) }}
+      {% if c.address_text %} ({{ c.address_text }}){% endif %}</p>
+    <p><strong>Reported by {{ c.report_count }} citizen(s)</strong></p>
+    <a class="btn-ghost" target="_blank"
+       href="https://www.openstreetmap.org/?mlat={{ c.latitude }}&mlon={{ c.longitude }}#map=18/{{ c.latitude }}/{{ c.longitude }}">
+       Open in full map &rarr;
+    </a>
+  </div>
+</section>
+
+<section>
+  <h2>Location on map</h2>
+  <div id="detail-map" data-lat="{{ c.latitude }}" data-lon="{{ c.longitude }}"></div>
+</section>
+
+<section>
+  <h2>Status history</h2>
+  <ul class="timeline">
+    {% for log in c.logs %}
+      <li><strong>{{ log.status }}</strong> -- {{ log.changed_at.strftime('%d %b %Y %H:%M') }}
+        {% if log.remarks %}<br><small>{{ log.remarks }}</small>{% endif %}
+      </li>
+    {% endfor %}
+  </ul>
+</section>
+
+{% if current_user.role in ('admin', 'worker') and next_statuses %}
+<section class="form-card">
+  <h2>Update status</h2>
+  <form method="POST" action="{{ url_for('update_status', complaint_id=c.id) }}">
+    <label>New status
+      <select name="status">
+        {% for s in next_statuses %}<option value="{{ s }}">{{ s }}</option>{% endfor %}
+      </select>
+    </label>
+    <label>Remarks<input type="text" name="remarks" placeholder="Optional note"></label>
+    <button class="btn" type="submit">Update</button>
+  </form>
+</section>
+{% endif %}
+
+{% if current_user.role == 'citizen' and c.user_id == current_user.id and c.status == 'Completed' %}
+<section class="form-card">
+  {% if c.feedback %}
+    <h2>Your feedback</h2>
+    <p class="star-display">{{ '⭐' * c.feedback.rating }}{{ '☆' * (5 - c.feedback.rating) }}</p>
+    {% if c.feedback.comment %}<p>"{{ c.feedback.comment }}"</p>{% endif %}
+  {% else %}
+    <h2>Rate how this was resolved</h2>
+    <form method="POST" action="{{ url_for('submit_feedback', complaint_id=c.id) }}">
+      <label>Rating
+        <select name="rating" required>
+          <option value="5">⭐⭐⭐⭐⭐ Excellent</option>
+          <option value="4">⭐⭐⭐⭐ Good</option>
+          <option value="3">⭐⭐⭐ Okay</option>
+          <option value="2">⭐⭐ Poor</option>
+          <option value="1">⭐ Very poor</option>
+        </select>
+      </label>
+      <label>Comment (optional)<input type="text" name="comment" placeholder="Any feedback for the department"></label>
+      <button class="btn" type="submit">Submit rating</button>
+    </form>
+  {% endif %}
+</section>
+{% endif %}
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+  document.addEventListener("DOMContentLoaded", function () {
+    const el = document.getElementById("detail-map");
+    const lat = parseFloat(el.dataset.lat), lon = parseFloat(el.dataset.lon);
+    const map = L.map("detail-map").setView([lat, lon], 17);
+    L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+      maxZoom: 19, attribution: "&copy; OpenStreetMap contributors",
+    }).addTo(map);
+    L.marker([lat, lon]).addTo(map);
+    setTimeout(function () { map.invalidateSize(); }, 200);
+  });
+</script>
+{% endblock %}

@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+{% block title %}Worker Dashboard{% endblock %}
+{% block content %}
+<section class="page-head">
+  <p class="eyebrow">{{ current_user.department }}</p>
+  <h1>Assigned complaints</h1>
+  <p class="subtext">Complaints routed to your department. Open one to see the photo, voice note,
+    exact location, and update its status as you work on it.</p>
+</section>
+
+<form method="GET" class="filter-bar">
+  <select name="status" onchange="this.form.submit()">
+    <option value="">All statuses</option>
+    {% for s in statuses %}<option value="{{ s }}">{{ s }}</option>{% endfor %}
+  </select>
+</form>
+
+{% if complaints %}
+<table class="table">
+  <tr><th>Code</th><th>Category</th><th>Priority</th><th>Status</th><th>Reports</th><th>Reported on</th><th></th></tr>
+  {% for c in complaints %}
+  <tr>
+    <td>{{ c.complaint_code }}</td>
+    <td>{{ c.category }}</td>
+    <td><span class="badge badge-{{ c.priority|lower }}">{{ c.priority }}</span></td>
+    <td><span class="badge badge-status-{{ c.status|lower|replace(' ', '-') }}">{{ c.status }}</span></td>
+    <td>{{ c.report_count }}</td>
+    <td>{{ c.created_at.strftime('%d %b %Y') }}</td>
+    <td><a href="{{ url_for('complaint_detail', complaint_id=c.id) }}">Manage</a></td>
+  </tr>
+  {% endfor %}
+</table>
+{% else %}
+<p>No complaints assigned to your department right now.</p>
+{% endif %}
+{% endblock %}

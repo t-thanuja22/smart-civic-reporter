@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+{% block title %}Admin Login{% endblock %}
+{% block content %}
+<section class="form-card">
+  <p class="eyebrow">Administration portal</p>
+  <h1>Admin login</h1>
+  <form method="POST">
+    <label>Email<input type="email" name="email" required></label>
+    <label>Password<input type="password" name="password" required></label>
+    <button class="btn" type="submit">Log in</button>
+  </form>
+  <p class="hint">Not an admin? <a href="{{ url_for('login') }}">Citizen login</a> &middot;
+     <a href="{{ url_for('worker_login') }}">Worker login</a></p>
+</section>
+{% endblock %}

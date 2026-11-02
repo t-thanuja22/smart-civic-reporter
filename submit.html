@@ -1,0 +1,81 @@
+{% extends "base.html" %}
+{% block title %}Report an Issue{% endblock %}
+{% block content %}
+<section class="page-head">
+  <p class="eyebrow">New report</p>
+  <h1>Report a civic issue</h1>
+  <p class="subtext">Pick the type of problem, take a live photo, and confirm the exact spot on the map --
+    the pin is draggable, so you can nudge it onto the precise pole, pipe, or pothole.</p>
+</section>
+
+<div class="submit-layout">
+  <section class="form-card">
+    <form method="POST" enctype="multipart/form-data" id="complaint-form">
+      <label>Type of problem
+        <select name="category" id="category-select">
+          <option value="">-- Select if known (optional) --</option>
+          {% for value, label in dropdown_categories %}
+            <option value="{{ value }}">{{ label }}</option>
+          {% endfor %}
+        </select>
+      </label>
+
+      <label>Photo of the issue -- live camera capture only
+        <span class="hint" style="display:block;margin-top:2px;font-weight:400;">
+          Gallery upload isn't allowed here, so the photo is proof it was actually taken at the spot.
+        </span>
+      </label>
+      <div class="camera-box">
+        <video id="camera-preview" playsinline autoplay style="display:none;"></video>
+        <img id="preview" style="display:none;">
+        <div class="camera-controls">
+          <button type="button" id="open-camera-btn" class="btn-ghost">&#128247; Open camera</button>
+          <button type="button" id="capture-btn" class="btn-ghost" style="display:none;">&#9679; Capture photo</button>
+          <button type="button" id="retake-btn" class="btn-ghost" style="display:none;">&#8635; Retake</button>
+        </div>
+        <p class="hint" id="camera-hint">Tap "Open camera" to take a live photo of the issue.</p>
+      </div>
+      <input type="file" id="image-input" name="image" style="display:none">
+      <p class="hint" id="stamp-hint"></p>
+
+      <label>Describe the problem
+        <textarea name="description" id="description" rows="4" required
+          placeholder="e.g. Street light near bus stop not working for 3 days"></textarea>
+      </label>
+
+      <label>Voice note (optional)
+        <span class="hint" style="display:block;margin-top:2px;font-weight:400;">
+          Can't type it out? Record a short voice note instead -- officials can listen to it directly.
+        </span>
+        <div class="voice-recorder">
+          <button type="button" id="record-btn" class="btn-ghost">&#9679; Start recording</button>
+          <span id="record-timer">00:00</span>
+        </div>
+        <audio id="voice-playback" controls style="display:none;margin-top:8px;width:100%;"></audio>
+      </label>
+      <input type="file" id="voice-input" name="voice_note" style="display:none">
+
+      <label>Landmark / area name (optional)
+        <input type="text" name="address_text" id="address_text"
+               placeholder="e.g. Opposite Anna Nagar bus depot">
+      </label>
+
+      <input type="hidden" name="latitude" id="latitude">
+      <input type="hidden" name="longitude" id="longitude">
+
+      <button class="btn" type="submit">Submit complaint</button>
+    </form>
+  </section>
+
+  <section class="map-card">
+    <div class="map-card-head">
+      <strong>Confirm the location</strong>
+      <button type="button" id="locate-btn" class="btn-ghost">Use my current location</button>
+    </div>
+    <div id="map"></div>
+    <p id="gps-status" class="hint">Detecting your location&hellip;</p>
+  </section>
+</div>
+
+<script src="{{ url_for('static', filename='js/script.js') }}"></script>
+{% endblock %}

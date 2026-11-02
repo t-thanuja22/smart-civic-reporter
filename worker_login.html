@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+{% block title %}Worker Login{% endblock %}
+{% block content %}
+<section class="form-card">
+  <p class="eyebrow">Department portal</p>
+  <h1>Worker login</h1>
+  <form method="POST">
+    <label>Email<input type="email" name="email" required></label>
+    <label>Password<input type="password" name="password" required></label>
+    <button class="btn" type="submit">Log in</button>
+  </form>
+  <p class="hint">Worker accounts are created by an administrator -- contact your department admin
+     if you don't have login details.</p>
+  <p class="hint">Not a worker? <a href="{{ url_for('login') }}">Citizen login</a> &middot;
+     <a href="{{ url_for('admin_login') }}">Admin login</a></p>
+</section>
+{% endblock %}

@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+{% block title %}Register{% endblock %}
+{% block content %}
+<section class="form-card">
+  <p class="eyebrow">Citizen sign-up</p>
+  <h1>{{ t('register_heading') }}</h1>
+  <form method="POST">
+    <label>{{ t('register_name') }}<input type="text" name="name" required></label>
+    <label>{{ t('login_email') }}<input type="email" name="email" required></label>
+    <label>{{ t('register_phone') }}<input type="tel" name="phone"></label>
+    <label>{{ t('login_password') }}<input type="password" name="password" required minlength="6"></label>
+    <button class="btn" type="submit">{{ t('register_button') }}</button>
+  </form>
+  <p>{{ t('register_have_account') }} <a href="{{ url_for('login') }}">{{ t('register_login_link') }}</a></p>
+</section>
+{% endblock %}

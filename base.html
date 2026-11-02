@@ -1,0 +1,65 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{% block title %}Smart Civic Reporter{% endblock %}</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+  {% block extra_head %}{% endblock %}
+</head>
+<body>
+  <header class="topbar">
+    <a class="brand" href="{{ url_for('index') }}">
+      <span class="brand-mark">🏙️</span>
+      <span class="brand-text">Smart<span>Civic</span>Reporter</span>
+    </a>
+    <nav>
+      <a href="{{ url_for('public_map') }}">{{ t('nav_public_map') }}</a>
+      {% if current_user.is_authenticated %}
+        {% if current_user.role == 'admin' %}
+          <a href="{{ url_for('admin_dashboard') }}">{{ t('nav_dashboard') }}</a>
+          <a href="{{ url_for('admin_analytics') }}">{{ t('nav_analytics') }}</a>
+          <a href="{{ url_for('manage_workers') }}">{{ t('nav_workers') }}</a>
+        {% elif current_user.role == 'worker' %}
+          <a href="{{ url_for('worker_dashboard') }}">{{ t('nav_dashboard') }}</a>
+        {% else %}
+          <a href="{{ url_for('submit_complaint') }}">{{ t('nav_report_issue') }}</a>
+          <a href="{{ url_for('my_complaints') }}">{{ t('nav_my_complaints') }}</a>
+          <a href="{{ url_for('notifications') }}">{{ t('nav_notifications') }}{% if unread_notifications %} <span class="notif-dot">{{ unread_notifications }}</span>{% endif %}</a>
+          <a href="{{ url_for('my_points') }}" class="green-points-badge">🌱 {{ my_green_points }}</a>
+        {% endif %}
+        <a href="{{ url_for('logout') }}" class="nav-user">{{ t('nav_logout') }} ({{ current_user.name }})</a>
+      {% else %}
+        <a href="{{ url_for('login') }}">{{ t('nav_login') }}</a>
+        <a href="{{ url_for('register') }}" class="cta">{{ t('nav_register') }}</a>
+      {% endif %}
+      <span class="lang-switch">
+        {% for code, label in supported_languages.items() %}
+          <a href="{{ url_for('set_language', lang_code=code) }}"
+             class="lang-link {{ 'lang-active' if current_lang == code else '' }}">{{ label }}</a>
+        {% endfor %}
+      </span>
+    </nav>
+  </header>
+
+  <main class="container">
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}
+        <div class="flash-stack">
+          {% for category, message in messages %}
+            <div class="flash flash-{{ category }}">{{ message }}</div>
+          {% endfor %}
+        </div>
+      {% endif %}
+    {% endwith %}
+
+    {% block content %}{% endblock %}
+  </main>
+
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  {% block extra_scripts %}{% endblock %}
+</body>
+</html>

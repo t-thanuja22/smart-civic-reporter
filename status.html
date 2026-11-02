@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+{% block title %}My Complaints{% endblock %}
+{% block content %}
+<h1>My complaints</h1>
+{% if complaints %}
+<table class="table">
+  <tr><th>Code</th><th>Category</th><th>Department</th><th>Priority</th><th>Status</th><th>Reported on</th><th>Feedback</th><th></th></tr>
+  {% for c in complaints %}
+  <tr>
+    <td>{{ c.complaint_code }}</td>
+    <td>{{ c.category }}</td>
+    <td>{{ c.department }}</td>
+    <td><span class="badge badge-{{ c.priority|lower }}">{{ c.priority }}</span></td>
+    <td><span class="badge badge-status-{{ c.status|lower|replace(' ', '-') }}">{{ c.status }}</span></td>
+    <td>{{ c.created_at.strftime('%d %b %Y %H:%M') }}</td>
+    <td>
+      {% if c.feedback %}
+        <span title="Rated">{{ '⭐' * c.feedback.rating }}</span>
+      {% elif c.status == 'Completed' %}
+        <a href="{{ url_for('complaint_detail', complaint_id=c.id) }}">Rate now</a>
+      {% else %}
+        <span class="hint">--</span>
+      {% endif %}
+    </td>
+    <td><a href="{{ url_for('complaint_detail', complaint_id=c.id) }}">View</a></td>
+  </tr>
+  {% endfor %}
+</table>
+{% else %}
+<p>You haven't reported anything yet. <a href="{{ url_for('submit_complaint') }}">Report an issue</a>.</p>
+{% endif %}
+{% endblock %}

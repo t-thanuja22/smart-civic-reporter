@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+{% block title %}Notifications{% endblock %}
+{% block content %}
+<section class="page-head">
+  <p class="eyebrow">Updates</p>
+  <h1>Notifications</h1>
+  <p class="subtext">Stand-in for email/SMS alerts -- you'd get a text or email here in a real deployment
+    whenever one of your complaints changes status.</p>
+</section>
+
+{% if notifications %}
+<ul class="timeline">
+  {% for n in notifications %}
+    <li>
+      <a href="{{ url_for('complaint_detail', complaint_id=n.complaint_id) }}">{{ n.message }}</a>
+      <br><small>{{ n.created_at.strftime('%d %b %Y %H:%M') }}</small>
+    </li>
+  {% endfor %}
+</ul>
+{% else %}
+<p>No notifications yet -- you'll see updates here as your complaints move through the process.</p>
+{% endif %}
+{% endblock %}

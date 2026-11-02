@@ -1,0 +1,99 @@
+{% extends "base.html" %}
+{% block title %}Smart Civic Reporter -- Home{% endblock %}
+{% block content %}
+<section class="hero">
+  <div class="hero-text">
+    <p class="eyebrow">{{ t('hero_eyebrow') }}</p>
+    <h1>{{ t('hero_title_1') }}<br>{{ t('hero_title_2') }}</h1>
+    <p>{{ t('hero_subtitle') }}</p>
+    {% if not current_user.is_authenticated %}
+      <a class="btn" href="{{ url_for('register') }}">{{ t('hero_cta_register') }}</a>
+    {% else %}
+      <a class="btn" href="{{ url_for('submit_complaint') }}">{{ t('hero_cta_report') }}</a>
+    {% endif %}
+  </div>
+  <div class="hero-image">
+    <img src="https://picsum.photos/seed/civicstreet/640/480" alt="City street">
+  </div>
+</section>
+
+<section class="portal-picker">
+  <div class="portal-card">
+    <span class="portal-icon">🙋</span>
+    <h3>{{ t('portal_citizen_title') }}</h3>
+    <p>{{ t('portal_citizen_desc') }}</p>
+    <a class="btn-ghost" href="{{ url_for('login') }}">{{ t('portal_citizen_btn') }}</a>
+  </div>
+  <div class="portal-card">
+    <span class="portal-icon">🛠️</span>
+    <h3>{{ t('portal_worker_title') }}</h3>
+    <p>{{ t('portal_worker_desc') }}</p>
+    <a class="btn-ghost" href="{{ url_for('worker_login') }}">{{ t('portal_worker_btn') }}</a>
+  </div>
+  <div class="portal-card">
+    <span class="portal-icon">🏛️</span>
+    <h3>{{ t('portal_admin_title') }}</h3>
+    <p>{{ t('portal_admin_desc') }}</p>
+    <a class="btn-ghost" href="{{ url_for('admin_login') }}">{{ t('portal_admin_btn') }}</a>
+  </div>
+</section>
+
+<section class="stats">
+  <div class="stat-card"><span>{{ total }}</span>{{ t('stats_total') }}</div>
+  <div class="stat-card"><span>{{ pending }}</span>{{ t('stats_progress') }}</div>
+  <div class="stat-card"><span>{{ resolved }}</span>{{ t('stats_resolved') }}</div>
+</section>
+
+<section class="category-showcase">
+  <h2>{{ t('category_heading') }}</h2>
+  <div class="category-grid">
+    <div class="category-tile" style="--tile-color:#ffb020;">
+      <span class="tile-icon">💡</span><strong>{{ t('category_streetlight') }}</strong>
+    </div>
+    <div class="category-tile" style="--tile-color:#2fb6d9;">
+      <span class="tile-icon">💧</span><strong>{{ t('category_water') }}</strong>
+    </div>
+    <div class="category-tile" style="--tile-color:#ef4d5e;">
+      <span class="tile-icon">⚡</span><strong>{{ t('category_wire') }}</strong>
+    </div>
+    <div class="category-tile" style="--tile-color:#3d7cf4;">
+      <span class="tile-icon">🚰</span><strong>{{ t('category_drainage') }}</strong>
+    </div>
+    <div class="category-tile" style="--tile-color:#8a5cf6;">
+      <span class="tile-icon">🕳️</span><strong>{{ t('category_pothole') }}</strong>
+    </div>
+    <div class="category-tile" style="--tile-color:#8fbf3d;">
+      <span class="tile-icon">🗑️</span><strong>{{ t('category_sanitation') }}</strong>
+    </div>
+    <div class="category-tile" style="--tile-color:#c73de6;">
+      <span class="tile-icon">🦟</span><strong>{{ t('category_mosquito') }}</strong>
+    </div>
+    <div class="category-tile" style="--tile-color:#2e8b57;">
+      <span class="tile-icon">🌿</span><strong>{{ t('category_bushes') }}</strong>
+    </div>
+    <div class="category-tile" style="--tile-color:#a0522d;">
+      <span class="tile-icon">🐄</span><strong>{{ t('category_animal') }}</strong>
+    </div>
+    <div class="category-tile" style="--tile-color:#2fbf71;">
+      <span class="tile-icon">📍</span><strong>{{ t('category_others') }}</strong>
+    </div>
+  </div>
+</section>
+
+{% if recent %}
+<section>
+  <h2>{{ t('recent_heading') }}</h2>
+  <table class="table">
+    <tr><th>Code</th><th>Category</th><th>Department</th><th>Priority</th><th>Status</th></tr>
+    {% for c in recent %}
+      <tr>
+        <td>{{ c.complaint_code }}</td><td>{{ c.category }}</td>
+        <td>{{ c.department }}</td>
+        <td><span class="badge badge-{{ c.priority|lower }}">{{ c.priority }}</span></td>
+        <td>{{ c.status }}</td>
+      </tr>
+    {% endfor %}
+  </table>
+</section>
+{% endif %}
+{% endblock %}

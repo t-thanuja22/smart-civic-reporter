@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+{% block title %}Admin Dashboard{% endblock %}
+{% block content %}
+<h1>Admin dashboard</h1>
+
+<form method="GET" class="filter-bar">
+  <select name="status" onchange="this.form.submit()">
+    <option value="">All statuses</option>
+    {% for s in statuses %}<option value="{{ s }}">{{ s }}</option>{% endfor %}
+  </select>
+  <select name="department" onchange="this.form.submit()">
+    <option value="">All departments</option>
+    {% for d in departments %}<option value="{{ d }}">{{ d }}</option>{% endfor %}
+  </select>
+</form>
+
+<table class="table">
+  <tr><th>Code</th><th>Category</th><th>Department</th><th>Priority</th><th>Status</th><th>Reports</th><th>Reported on</th><th></th></tr>
+  {% for c in complaints %}
+  <tr>
+    <td>{{ c.complaint_code }}</td>
+    <td>{{ c.category }}</td>
+    <td>{{ c.department }}</td>
+    <td><span class="badge badge-{{ c.priority|lower }}">{{ c.priority }}</span></td>
+    <td>{{ c.status }}</td>
+    <td>{{ c.report_count }}</td>
+    <td>{{ c.created_at.strftime('%d %b %Y') }}</td>
+    <td><a href="{{ url_for('complaint_detail', complaint_id=c.id) }}">Manage</a></td>
+  </tr>
+  {% endfor %}
+</table>
+{% endblock %}

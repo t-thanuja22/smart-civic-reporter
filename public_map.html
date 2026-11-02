@@ -1,0 +1,46 @@
+{% extends "base.html" %}
+{% block title %}Public Map{% endblock %}
+{% block content %}
+<section class="page-head">
+  <p class="eyebrow">Transparency</p>
+  <h1>All reported issues</h1>
+  <p class="subtext">Every complaint reported through Smart Civic Reporter, plotted where it was filed.
+    Click a pin for details.</p>
+</section>
+
+<div id="public-map"></div>
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+  document.addEventListener("DOMContentLoaded", function () {
+    const map = L.map("public-map").setView([11.1271, 78.6569], 7);
+    L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+      maxZoom: 19, attribution: "&copy; OpenStreetMap contributors",
+    }).addTo(map);
+
+    const priorityColor = { Critical: "#ef4d5e", High: "#ff8a3d", Medium: "#ffc93c", Low: "#1fae74" };
+
+    fetch("{{ url_for('api_complaints') }}")
+      .then(function (r) { return r.json(); })
+      .then(function (complaints) {
+        if (!complaints.length) return;
+        const bounds = [];
+        complaints.forEach(function (c) {
+          const color = priorityColor[c.priority] || "#6c4ff6";
+          const marker = L.circleMarker([c.latitude, c.longitude], {
+            radius: 8, color: color, fillColor: color, fillOpacity: 0.85, weight: 2,
+          }).addTo(map);
+          marker.bindPopup(
+            "<strong>" + c.category + "</strong><br>" +
+            c.department + "<br>" +
+            "Priority: " + c.priority + " &middot; Status: " + c.status + "<br>" +
+            "<a href='/complaint/" + c.id + "'>View complaint</a>"
+          );
+          bounds.push([c.latitude, c.longitude]);
+        });
+        map.fitBounds(bounds, { padding: [30, 30] });
+      });
+  });
+</script>
+{% endblock %}
